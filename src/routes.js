@@ -4,10 +4,18 @@ const multerConfig = require("./config/multer");
 
 const Post = require("./models/Post");
 
-routes.get("/posts", async (req, res) => {
-  const posts = await Post.find();
+routes.get("/posts/:size", async (req, res) => {
+  try {
+    const size = parseInt(req.params.size) || 0;
+    const posts = await Post.find()
+      .skip(size)
+      .limit(12);
 
-  return res.json(posts);
+    return res.json(posts);
+  } catch (error) {
+    console.log("error happened");
+    return res.send(error);
+  }
 });
 
 routes.post("/posts", multer(multerConfig).single("file"), async (req, res) => {
