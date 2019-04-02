@@ -4,7 +4,7 @@ const multerConfig = require("./config/multer");
 
 const Post = require("./models/Post");
 
-routes.get("/posts/:size", async (req, res) => {
+routes.get("/posts/:size?", async (req, res) => {
   try {
     const size = parseInt(req.params.size) || 0;
     const posts = await Post.find()
@@ -43,6 +43,7 @@ routes.delete("/posts/:id", async (req, res) => {
     return res.send();
   } catch (error) {
     console.log("error happened");
+    console.log(error);
     return res.send(error);
   }
 });
