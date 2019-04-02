@@ -8,6 +8,7 @@ routes.get("/posts/:size", async (req, res) => {
   try {
     const size = parseInt(req.params.size) || 0;
     const posts = await Post.find()
+      .sort({ createdAt: "desc" })
       .skip(size)
       .limit(12);
 
@@ -19,22 +20,31 @@ routes.get("/posts/:size", async (req, res) => {
 });
 
 routes.post("/posts", multer(multerConfig).single("file"), async (req, res) => {
-  const { originalname: name, size, key, location: url } = req.file;
-  const post = await Post.create({
-    name,
-    size,
-    key,
-    url
-  });
-  return res.json(post);
+  try {
+    const { originalname: name, size, key, location: url } = req.file;
+    const post = await Post.create({
+      name,
+      size,
+      key,
+      url
+    });
+    return res.json(post);
+  } catch (error) {
+    return res.json(error);
+  }
 });
 
 routes.delete("/posts/:id", async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  try {
+    const post = await Post.findById(req.params.id);
 
-  await post.remove();
+    await post.remove();
 
-  return res.send();
+    return res.send();
+  } catch (error) {
+    console.log("error happened");
+    return res.send(error);
+  }
 });
 
 module.exports = routes;
